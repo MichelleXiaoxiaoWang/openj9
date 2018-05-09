@@ -20,10 +20,15 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0 OR GPL-2.0 WITH Classpath-exception-2.0 OR LicenseRef-GPL-2.0 WITH Assembly-exception
  *******************************************************************************/
 
-Boolean FAIL = false
-String SRC_REPO = 'https://github.com/${ghprbGhRepository}.git'
+def FAIL = false
+def SRC_REPO = 'https://github.com/${ghprbGhRepository}.git'
 def BAD_FILES = []
-String HASHES = '###################################'
+def HASHES = '###################################'
+def WHITELIST_FILES = []
+def REGEXLIST = [];
+def FILES = [];
+def white = []
+def ignorefile = "${env.WORKSPACE}/.copyrightignore";
 
 timeout(time: 6, unit: 'HOURS') {
     stage('Copyright Check') {
@@ -46,7 +51,7 @@ timeout(time: 6, unit: 'HOURS') {
                         script: "date +%Y",
                         returnStdout: true
                     ).trim()
-                    
+
                     // Set a different Copyright regex depending on the Repo the PR is from
                     if (ghprbGhRepository ==~ "eclipse.*") {
                         REGEX = "\'Copyright \\(c\\) ([0-9]{4}), ${DATE_YEAR}\'"
@@ -57,24 +62,62 @@ timeout(time: 6, unit: 'HOURS') {
                         sh 'exit 1'
                     }
 
-                    FILES_LIST.each() {
-                        println "Checking file: '${it}'"
-                        RESULT = sh (
-                            script: "grep -qE ${REGEX} '${it}'",
-                            returnStatus: true)
-                        if(RESULT != 0) {
-                            echo "FAILURE - Copyright date in file: '${it}' appears to be incorrect"
-                            FAIL = true
-                            BAD_FILES << "${it}"
-                        } else {
-                            echo "Copyright date in file: appears to be correct"
+                    if (fileExists(ignorefile)){
+                        new File(ignorefile).eachLine { line ->
+                             white << line
                         }
+                        for (item in white){
+                            regexsElm = item;
+
+                             if (item.contains("**")) {
+                                regexsElm = regexsElm.replaceAll(/[*]/, '\\[a-zA-Z0-9]+');
+                            }
+                             if (item.contains("/")) {
+                                regexsElm = regexsElm.replaceAll(/\//,/\.\*/);
+                            }
+
+                            if (item.contains("#")){
+                                regexsElm = item + "."+"*";
+                            }
+
+                             if (item.contains(".")){
+                                regexsElm =  /[a-zA-Z0-9]+\./+ [item.substring(item.lastIndexOf(".") + 1)] + /+$/;
+                            }
+
+                            REGEXLIST << regexsElm ;
+                        }
+
+                        FILES_LIST.each { fileName ->
+                           REGEXLIST.each { regexses ->
+                                if (fileName ==~ /${regexses}/ && !WHITELIST_FILES.contains(fileName)) {
+                                    WHITELIST_FILES << "${fileName}";
+                                    println "Checking file: '${fileName}', appears to be in whiteList";
+                                    break;
+                                }
+                            }
+                        }
+                        FILES_LIST -= WHITELIST_FILES;
                     }
+
+                    FILES_LIST.each { files ->
+                    println "Checking file: '${files}'";
+                        RESULT = sh (
+                                    script: "grep -qE ${REGEX} '${files}'",
+                                    returnStatus: true)
+                        if(RESULT != 0){
+                              BAD_FILES << "${files}"
+                              echo "FAILURE - Copyright date in file: '${files}' appears to be incorrect"
+                              FAIL = true
+                        }else{
+                               echo "Copyright date in file: appears to be correct"
+                }
+               }
+
                     if (FAIL) {
                         echo "${HASHES}"
                         echo "The following files were modified and have incorrect copyrights"
                         BAD_FILES.each() {
-                            echo "${it}"
+                            echo "${files}"
                         }
                         echo "${HASHES}"
                         sh 'exit 1'

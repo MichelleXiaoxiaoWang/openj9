@@ -99,14 +99,14 @@ timeout(time: 6, unit: 'HOURS') {
                         FILES_LIST -= WHITELIST_FILES;
                     }
 
-                    FILES_LIST.each { files ->
-                    println "Checking file: '${files}'";
+                    FILES_LIST.each { file ->
+                    println "Checking file: '${file}'";
                         RESULT = sh (
-                                    script: "grep -qE ${REGEX} '${files}'",
+                                    script: "grep -qE ${REGEX} '${file}'",
                                     returnStatus: true)
                         if(RESULT != 0){
-                              BAD_FILES << "${files}"
-                              echo "FAILURE - Copyright date in file: '${files}' appears to be incorrect"
+                              BAD_FILES << "${file}"
+                              echo "FAILURE - Copyright date in file: '${file}' appears to be incorrect"
                               FAIL = true
                         }else{
                                echo "Copyright date in file: appears to be correct"
@@ -116,8 +116,8 @@ timeout(time: 6, unit: 'HOURS') {
                     if (FAIL) {
                         echo "${HASHES}"
                         echo "The following files were modified and have incorrect copyrights"
-                        BAD_FILES.each() {
-                            echo "${files}"
+                        BAD_FILES.each {file -> 
+                            echo "${file}"
                         }
                         echo "${HASHES}"
                         sh 'exit 1'

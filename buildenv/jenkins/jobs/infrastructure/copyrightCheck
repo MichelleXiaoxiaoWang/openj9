@@ -73,15 +73,15 @@ timeout(time: 6, unit: 'HOURS') {
                              if (item.contains("/")) {
                                 regexsElm = regexsElm.replaceAll(/\//,/\.\*/);
                              }
-                           
+
+                             if (item.contains("#")){
+                                regexsElm = item;
+                             }
+
                              if (item.contains(".")){
                                 regexsElm =  /[a-zA-Z0-9]+\./+ [item.substring(item.lastIndexOf(".") + 1)] + /+$/;
                              }
-                             
-                             if (item.contains("#")){
-                                    regexsElm = regexsElm.replaceAll("\\*", "");
-                                    regexsElm = ""; 
-                                }
+
                             REGEXLIST << regexsElm ;
                         }
                         FILES_LIST.each { fileName ->

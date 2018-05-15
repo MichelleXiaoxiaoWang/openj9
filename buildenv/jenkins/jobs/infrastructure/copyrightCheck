@@ -67,37 +67,40 @@ timeout(time: 6, unit: 'HOURS') {
                         def READLIST = readinFiles.split("\\r?\\n");
                         for (item in READLIST){
                              regexsElm = item;
-                             if (item.contains("*")) {
-                                regexsElm = regexsElm.replaceAll(/[*]/, /[a-zA-Z0-9]+\//);
-                            }
-                            
-                             if (item.contains("/")) {
-                                regexsElm = regexsElm.replaceAll(/\//,/\.\*[a-zA-Z0-9]+\.\*/);
-                            }
-                            
-                             if (item.contains(".")){
-                                regexsElm = regexsElm + /+$/;
+                             if (item.contains("**")) {
+                                regexsElm = regexsElm.replaceAll(/[*]/, '\\[a-zA-Z0-9]+');
                              }
+                             if (item.contains("/")) {
+                                regexsElm = regexsElm.replaceAll(/\//,/\.\*/);
+                             }
+                           
+                             if (item.contains(".")){
+                                regexsElm =  /[a-zA-Z0-9]+\./+ [item.substring(item.lastIndexOf(".") + 1)] + /+$/;
+                             }
+                             
                              if (item.contains("#")){
-                                regexsElm = regexsElm.replaceAll("\\*", "");
-                                regexsElm = ""; 
-                            }
+                                    regexsElm = regexsElm.replaceAll("\\*", "");
+                                    regexsElm = ""; 
+                                }
                             REGEXLIST << regexsElm ;
                         }
                         FILES_LIST.each { fileName ->
+                        echo "${FILES_LIST}";
                            REGEXLIST.each { regexses ->
                                 if (fileName ==~ /${regexses}/ && !WHITELIST_FILES.contains(fileName)) {
                                     WHITELIST_FILES << "${fileName}";
+                                    print WHITELIST_FILES + " ~~~~~~~`"
                                     echo "Ignoring Files: '${fileName}', appears to be in whiteList";  
                                     return true                                                  
                                 }
                             }
                         }
                         FILES_LIST = FILES_LIST.collect { it.toString() } - WHITELIST_FILES.collect {it.toString()};
+                        print FILES_LIST + "????????"
                     }
                     
                     FILES_LIST.each { file ->                
-                    echo "Checking file: '${file}'";
+                    println "Checking file: '${file}'";
                         RESULT = sh (
                                     script: "grep -qE ${REGEX} '${file}'",
                                     returnStatus: true)

@@ -93,6 +93,8 @@ timeout(time: 6, unit: 'HOURS') {
                                 }
                             }
                         }
+                        print FILES_LIST.collect { it.toString() } + "!!!!!!!!!!!!!!!!!!"
+                        print  WHITELIST_FILES.collect {it.toString()} + "~~~~~~~~~~~~~~~~"
                         FILES_LIST = FILES_LIST.collect { it.toString() } - WHITELIST_FILES.collect {it.toString()};
                     }
                     

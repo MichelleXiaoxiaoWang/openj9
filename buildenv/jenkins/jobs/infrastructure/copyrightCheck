@@ -26,7 +26,7 @@ def BAD_FILES = []
 def HASHES = '###################################'
 def WHITELIST_FILES = []
 def REGEXLIST = [];
-def FILES = [];
+def FILES = []
 def white = []
 def ignorefile = "${env.WORKSPACE}/.copyrightignore";
 
@@ -62,45 +62,43 @@ timeout(time: 6, unit: 'HOURS') {
                         sh 'exit 1'
                     }
 
-                    if (fileExists(ignorefile)){
-                        new File(ignorefile).eachLine { line ->
-                             white << line
-                        }
-                        for (item in white){
-                            regexsElm = item;
-
-                             if (item.contains("**")) {
-                                regexsElm = regexsElm.replaceAll(/[*]/, '\\[a-zA-Z0-9]+');
+                    if(fileExists("${env.WORKSPACE}/.copyrightignore")){
+                        def readinFiles = readFile("${env.WORKSPACE}/.copyrightignore");
+                        def READLIST = readinFiles.split("\\r?\\n");
+                        for (item in READLIST){
+                             regexsElm = item;
+                              if (item.contains("*")) {
+                                regexsElm = regexsElm.replaceAll(/[*]/, /[a-zA-Z0-9]+\//);
                             }
+                            
                              if (item.contains("/")) {
-                                regexsElm = regexsElm.replaceAll(/\//,/\.\*/);
+                                regexsElm = regexsElm.replaceAll(/\//,/\.\*[a-zA-Z0-9]+\.\*/);
                             }
-
-                            if (item.contains("#")){
-                                regexsElm = item + "."+"*";
-                            }
-
+                            
                              if (item.contains(".")){
-                                regexsElm =  /[a-zA-Z0-9]+\./+ [item.substring(item.lastIndexOf(".") + 1)] + /+$/;
-                            }
-
+                                regexsElm = regexsElm + /+$/;
+                             }
+                             if (item.contains("#")){
+                                regexsElm = regexsElm.replaceAll("\\*", "");
+                                regexsElm = ""; 
+                            }                            
                             REGEXLIST << regexsElm ;
                         }
-
+                        
                         FILES_LIST.each { fileName ->
                            REGEXLIST.each { regexses ->
                                 if (fileName ==~ /${regexses}/ && !WHITELIST_FILES.contains(fileName)) {
                                     WHITELIST_FILES << "${fileName}";
-                                    println "Checking file: '${fileName}', appears to be in whiteList";
-                                    break;
+                                    echo "Ignoring Files: '${fileName}', appears to be in whiteList";  
+                                    return true                                                  
                                 }
                             }
                         }
-                        FILES_LIST -= WHITELIST_FILES;
+                        FILES_LIST = FILES_LIST.collect { it.toString() } - WHITELIST_FILES.collect {it.toString()};
                     }
-
-                    FILES_LIST.each { file ->
-                    println "Checking file: '${file}'";
+                    
+                    FILES_LIST.each { file ->                
+                    echo "Checking file: '${file}'";
                         RESULT = sh (
                                     script: "grep -qE ${REGEX} '${file}'",
                                     returnStatus: true)
@@ -110,8 +108,8 @@ timeout(time: 6, unit: 'HOURS') {
                               FAIL = true
                         }else{
                                echo "Copyright date in file: appears to be correct"
-                }
-               }
+                        }
+                    }
 
                     if (FAIL) {
                         echo "${HASHES}"

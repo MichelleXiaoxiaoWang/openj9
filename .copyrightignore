@@ -22,6 +22,7 @@
 # TODO README ON COPYRIGHT WHITELIST
 # *******************************************************************************/
 buildenv/
-job
+**/job
 #
-*.ignore
+debugtools/**/*.ignore
+buildspecs/*.ignore

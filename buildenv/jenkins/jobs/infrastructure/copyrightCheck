@@ -67,21 +67,21 @@ timeout(time: 6, unit: 'HOURS') {
                         def READLIST = readinFiles.split("\\r?\\n");
                         for (item in READLIST){
                              regexsElm = item;
-                             if (item.contains("**")) {
-                                regexsElm = regexsElm.replaceAll(/[*]/, '\\[a-zA-Z0-9]+');
-                             }
+                             if (item.contains("*")) {
+                                regexsElm = regexsElm.replaceAll(/[*]/, /[a-zA-Z0-9]+\//);
+                            }
+                            
                              if (item.contains("/")) {
-                                regexsElm = regexsElm.replaceAll(/\//,/\.\*/);
-                             }
-                           
+                                regexsElm = regexsElm.replaceAll(/\//,/\.\*[a-zA-Z0-9]+\.\*/);
+                            }
+                            
                              if (item.contains(".")){
-                                regexsElm =  /[a-zA-Z0-9]+\./+ [item.substring(item.lastIndexOf(".") + 1)] + /+$/;
+                                regexsElm = regexsElm + /+$/;
                              }
-
                              if (item.contains("#")){
-                                    regexsElm = regexsElm.replaceAll("\\*", "");
-                                    regexsElm = ""; 
-                                }
+                                regexsElm = regexsElm.replaceAll("\\*", "");
+                                regexsElm = ""; 
+                            }
                             REGEXLIST << regexsElm ;
                         }
                         FILES_LIST.each { fileName ->

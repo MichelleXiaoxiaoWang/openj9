@@ -1,0 +1,22 @@
+node(){
+    try{
+        FILES = sh (
+            script: "echo 'abc\n123'",
+            returnStdout: true).trim()
+        
+        echo "FILES: Class:'${FILES.getClass()}' List:'${FILES}'"
+        FILES_LIST = FILES.split('\\r?\\n')
+        //FILES = [ 'abc', '123' ]
+        echo "FILES_LIST: Class:'${FILES_LIST.getClass()}' List:'${FILES_LIST}'"
+        //filename = '123'
+        FILES_LIST.each() { filename ->
+            echo "Filename: ${filename} Class:'${filename.getClass()}'"
+            if(filename == '123'){
+                FILES_LIST -= filename
+            }
+            echo "${FILES_LIST}"
+        }
+    } finally {
+        cleanWs()
+    }
+}

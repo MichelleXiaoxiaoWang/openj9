@@ -91,7 +91,7 @@ timeout(time: 6, unit: 'HOURS') {
                                     //WHITELIST_FILES << "${fileName}";
                                     echo "${fileName.getClass()}"
                                     //FILES_LIST = FILES_LIST.collect { it.toString() } - "${fileName}";
-                                    FILES_LIST = "${FILES_LIST}"-"${fileName}"
+                                    FILES_LIST = ${FILES_LIST}-"${fileName}"
                                     echo "Ignoring Files: '${fileName}', appears to be in whiteList";  
                                     return true                                                  
                                 }

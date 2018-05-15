@@ -84,10 +84,12 @@ timeout(time: 6, unit: 'HOURS') {
                                 }
                             REGEXLIST << regexsElm ;
                         }
+                        echo "${FILES_LIST.getClass()}"
                         FILES_LIST.each { fileName ->
                            REGEXLIST.each { regexses ->
                                 if (fileName ==~ /${regexses}/ && !WHITELIST_FILES.contains(fileName)) {
                                     //WHITELIST_FILES << "${fileName}";
+                                    echo "${fileName.getClass()}"
                                     FILES_LIST = FILES_LIST.collect { it.toString() } - "${fileName}";
                                     echo "Ignoring Files: '${fileName}', appears to be in whiteList";  
                                     return true                                                  

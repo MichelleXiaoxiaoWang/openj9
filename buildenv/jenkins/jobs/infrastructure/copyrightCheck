@@ -87,15 +87,12 @@ timeout(time: 6, unit: 'HOURS') {
                         FILES_LIST.each { fileName ->
                            REGEXLIST.each { regexses ->
                                 if (fileName ==~ /${regexses}/ && !WHITELIST_FILES.contains(fileName)) {
-                                    WHITELIST_FILES << "${fileName}";
+                                    FILES_LIST -= fileName;
                                     echo "Ignoring Files: '${fileName}', appears to be in whiteList";  
                                     return true                                                  
                                 }
                             }
                         }
-                        print FILES_LIST.collect { it.toString() } + "!!!!!!!!!!!!!!!!!!"
-                        print  WHITELIST_FILES.collect {it.toString()} + "~~~~~~~~~~~~~~~~"
-                        FILES_LIST = FILES_LIST.collect { it.toString() } - WHITELIST_FILES.collect {it.toString()};
                     }
                     
                     FILES_LIST.each { file ->                

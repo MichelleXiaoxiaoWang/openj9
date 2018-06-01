@@ -87,6 +87,9 @@ You can also request a Pull Request build from the extensions repos or openj9-om
 
 - To trigger a Copyright Check
    - `Jenkins copyright check`
+   
+- To trigger a SignOffBy Check
+   - `Jenkins signed off by check`
 
 ##### PullRequest Trigger Regexes
 Having a complicated regex in the pull request trigger is what allows us to launch exactly the right combination of builds we need without having to make several trigger comments. The following are examples of what regexes we use in the various jobs.
@@ -483,6 +486,12 @@ Having a complicated regex in the pull request trigger is what allows us to laun
     - Trigger:
         - Automatically builds on every PR
         - Retrigger with `Jenkins copyright check`
+
+- PullRequest-signOffByCheck-**REPO**
+    - Description:
+        - Checks the commits commited in a pull request have proper sign-off
+    - Trigger:
+        - trigger with `Jenkins signed off by check`
 
 #### Test
 

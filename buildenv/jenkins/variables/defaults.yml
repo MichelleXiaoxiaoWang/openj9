@@ -214,11 +214,11 @@ linux_x86-64_cmprssptrs_cmake:
       11: 'hw.arch.x86 && sw.os.ubuntu'
       next: 'hw.arch.x86 && sw.os.ubuntu'
   extra_configure_options:
-    8: '--with-cmake --disable-ddr'
-    9: '--with-cmake --disable-ddr'
-    10: '--with-cmake --disable-ddr'
-    11: '--with-cmake --disable-ddr'
-    next: '--with-cmake --disable-ddr'
+    8: '--with-cmake --disable-ddr --with-jobs=8'
+    9: '--with-cmake --disable-ddr --with-jobs=8'
+    10: '--with-cmake --disable-ddr --with-jobs=8'
+    11: '--with-cmake --disable-ddr --with-jobs=8'
+    next: '--with-cmake --disable-ddr --with-jobs=8'
   extra_make_options:
     8: 'EXTRA_CMAKE_ARGS="-DOMR_WARNINGS_AS_ERRORS=FALSE"'
     9: 'EXTRA_CMAKE_ARGS="-DOMR_WARNINGS_AS_ERRORS=FALSE"'
@@ -257,11 +257,11 @@ linux_x86-64:
       11: 'hw.arch.x86 && sw.os.ubuntu'
       next: 'hw.arch.x86 && sw.os.ubuntu'
   extra_configure_options:
-    8: '--with-noncompressedrefs'
-    9: '--with-noncompressedrefs'
-    10: '--with-noncompressedrefs'
-    11: '--with-noncompressedrefs'
-    next: '--with-noncompressedrefs'
+    8: '--with-noncompressedrefs --with-jobs=8'
+    9: '--with-noncompressedrefs --with-jobs=8'
+    10: '--with-noncompressedrefs --with-jobs=8'
+    11: '--with-noncompressedrefs --with-jobs=8'
+    next: '--with-noncompressedrefs --with-jobs=8'
 #========================================#
 # Windows x86 64bits Compressed Pointers
 #========================================#
